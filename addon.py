@@ -1,7 +1,9 @@
 import datetime
-from aqt import qt, mw, utils, gui_hooks
-from . import beeminder
+import sys
 
+from aqt import gui_hooks, mw, qt, utils
+
+from . import beeminder
 
 placeholder_slug = "PUT_YOUR_BEEMINDER_GOAL_SHORT_NAME_HERE"
 
@@ -146,7 +148,13 @@ def menu_update():
     update(mw.col, True)
 
 
+# Create the shortcut based on platform
+shortcut = "Meta+Shift+B" if sys.platform == "darwin" else "Ctrl+Shift+B"
+shortcut_text = "⌘⇧B" if sys.platform == "darwin" else "Ctrl+Shift+B"
+
+# Create menu action with shortcut
 update_action = qt.QAction("Update Beeminder", mw)
+update_action.setShortcut(qt.QKeySequence(shortcut))
 update_action.triggered.connect(menu_update)
 mw.form.menuTools.addAction(update_action)
 

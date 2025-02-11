@@ -148,11 +148,9 @@ def menu_update():
     update(mw.col, True)
 
 
-# Create the shortcut based on platform
-shortcut = "Meta+Shift+B" if sys.platform == "darwin" else "Ctrl+Shift+B"
+# Create a shortcut for updating Beeminder
+shortcut = "Ctrl+Shift+B"  # Qt will automatically map Ctrl to Cmd on macOS
 shortcut_text = "⌘⇧B" if sys.platform == "darwin" else "Ctrl+Shift+B"
-
-# Create menu action with shortcut
 update_action = qt.QAction("Update Beeminder", mw)
 update_action.setShortcut(qt.QKeySequence(shortcut))
 update_action.triggered.connect(menu_update)

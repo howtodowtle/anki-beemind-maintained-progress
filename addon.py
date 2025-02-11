@@ -41,10 +41,16 @@ def check_goals():
                 if res["success?"]:
                     valid_goals.append(goal)
                 else:
-                    goal["error"] = "Error configuring goal on beeminder: " + res["error_message"] + ". If you think this is resolved, restart anki and try again."
+                    goal["error"] = (
+                        "Error configuring goal on beeminder: "
+                        + res["error_message"]
+                        + ". If you think this is resolved, restart anki and try again."
+                    )
                     invalid_goals.append(goal)
             else:
-                goal["error"] = "This goal autosums data, which is not compatible with the data this addon produces. Create an odometer type goal."
+                goal["error"] = (
+                    "This goal autosums data, which is not compatible with the data this addon produces. Create an odometer type goal."
+                )
                 invalid_goals.append(goal)
             checked_goals["goal_slug"] = goal
         elif checked_goals[goal_slug]:
@@ -63,8 +69,10 @@ def check_goals():
 
 
 def get_maintained_progress(col, projection_days, search_filter):
-    search_string = ("-is:suspended -is:new -is:due -prop:due<=%s %s"
-                     % (projection_days, search_filter))
+    search_string = "-is:suspended -is:new -is:due -prop:due<=%s %s" % (
+        projection_days,
+        search_filter,
+    )
     return len(col.findCards(search_string))
 
 
@@ -91,12 +99,19 @@ def update(col, show_info=False):
         if day == 0:
             return ""
         else:
-            return "{}-day PESSIMISTIC PROJECTION (will be updated by anki addon)".format(day)
+            return (
+                "{}-day PESSIMISTIC PROJECTION (will be updated by anki addon)".format(
+                    day
+                )
+            )
 
     goals = check_goals()
 
     for goal in goals["invalid"]:
-        info_string = ("Can't update goal %s: %s" % (goal["beeminder_slug"], goal["error"]))
+        info_string = "Can't update goal %s: %s" % (
+            goal["beeminder_slug"],
+            goal["error"],
+        )
         if mw_loaded:
             utils.showInfo(info_string)
         else:
@@ -106,25 +121,30 @@ def update(col, show_info=False):
         goal_slug = goal["beeminder_slug"]
         search_filter = goal.get("filter", "")
 
-        datapoints = [beeminder.as_datapoint(get_maintained_progress(col, day, search_filter),
-                                             datestamp_in_days(col, day),
-                                             projection_comment(day))
-                      for day in range(days_ahead+1)]
+        datapoints = [
+            beeminder.as_datapoint(
+                get_maintained_progress(col, day, search_filter),
+                datestamp_in_days(col, day),
+                projection_comment(day),
+            )
+            for day in range(days_ahead + 1)
+        ]
 
-        beeminder_result = beeminder.add_datapoints(auth_token,
-                                                    goal_slug,
-                                                    datapoints)
+        beeminder_result = beeminder.add_datapoints(auth_token, goal_slug, datapoints)
 
         if show_info:
             if beeminder_result["success?"]:
                 filter_string = " in " + search_filter if search_filter else ""
-                info_string = ("Updated beeminder goal %s "
-                               "with %s cards of maintained progress"
-                               "%s" %
-                               (goal_slug, datapoints[0]["value"], filter_string))
+                info_string = (
+                    "Updated beeminder goal %s "
+                    "with %s cards of maintained progress"
+                    "%s" % (goal_slug, datapoints[0]["value"], filter_string)
+                )
             else:
-                info_string = ("There was a problem updating beeminder:\n\n"
-                            + beeminder_result["error_message"])
+                info_string = (
+                    "There was a problem updating beeminder:\n\n"
+                    + beeminder_result["error_message"]
+                )
 
             utils.showInfo(info_string)
 
@@ -138,10 +158,12 @@ def on_profile_loaded():
         utils.showInfo(msg)
     mw_loaded = True
 
+
 gui_hooks.profile_did_open.append(on_profile_loaded)
 
 
 # menu item
+
 
 def menu_update():
     update(mw.col, True)
@@ -165,11 +187,13 @@ def on_review_cleanup():
     if should_update("finishing_reviews"):
         update(mw.col)
 
+
 gui_hooks.reviewer_will_end.append(on_review_cleanup)
 
 
 def on_sync_did_finish():
     if should_update("syncing"):
         update(mw.col)
+
 
 gui_hooks.sync_did_finish.append(on_sync_did_finish)

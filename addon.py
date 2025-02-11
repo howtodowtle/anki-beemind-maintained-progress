@@ -1,5 +1,4 @@
 import datetime
-import sys
 
 from aqt import gui_hooks, mw, qt, utils
 
@@ -150,7 +149,6 @@ def menu_update():
 
 # Create a shortcut for updating Beeminder
 shortcut = "Ctrl+Shift+B"  # Qt will automatically map Ctrl to Cmd on macOS
-shortcut_text = "⌘⇧B" if sys.platform == "darwin" else "Ctrl+Shift+B"
 update_action = qt.QAction("Update Beeminder", mw)
 update_action.setShortcut(qt.QKeySequence(shortcut))
 update_action.triggered.connect(menu_update)
